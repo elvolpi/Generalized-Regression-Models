@@ -1,0 +1,50 @@
+---
+title: "Untitled"
+output: pdf_document
+date: '2022-10-15'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+shuttle_dat <- read.delim("C:/Users/19712/Downloads/HW2-space-shuttle-data.txt")
+shuttle_dat$Failure <- ifelse(shuttle_dat$Failure == "Yes",1,0 )
+mod <- glm(shuttle_dat$Failure~shuttle_dat$Temperature, family = binomial)
+summary(mod)
+vcov(mod)
+
+
+
+```
+### A)
+Our estimate for intercept $\hat{\beta_0}$ is 10.87535 with a standard error of 5.60291. Our estimate for $\hat{\beta_1}$ is -0.17132 with a standard error of 0.0344
+
+```{r}
+wald_test_stat <- (mod$coefficients[2]/(0.08344))
+wald_test_stat
+p <- pnorm(wald_test_stat, lower.tail = TRUE)
+p
+```
+### B) 
+ Wald's Test for whether the coefficient Temperature is 0 gives a one sided p value of 0.02. 
+
+```{r}
+logit.y <- mod
+V <- vcov(logit.y)
+c(logit.y$coef[2]-1.96*sqrt(V[2,2]), 
+  logit.y$coef[2]+1.96*sqrt(V[2,2]))
+
+```
+
+### C) 
+
+The 95% confidence interval for temperature is (-.335, -0.0078).
+
+### D) 
+```{r}
+theta_hat = logit.y$coef[1]+logit.y$coef[2]*31
+exp(theta_hat)/(1+exp(theta_hat))
+```
+The survival probability at 31 degrees farenheight is 0.9961828. 
